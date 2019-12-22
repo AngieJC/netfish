@@ -25,17 +25,6 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 		return;
 	}
 	//本文件用于获取用户输入的命令
-	/*
-	//如果用户输入的是nf -lp [port]
-	if(!strcmp(argv[1], "-lp"))
-	{
-		*ip = (char *)"127.0.0.1";
-		*port_start = atoi(argv[2]);
-		*port_end = atoi(argv[2]);
-		flag[LISTEN] = true;
-		*file = NULL;
-	}
-	*/
 	argv[1]++;  // 跳过'-'
 	while(*argv[1] != 0)
 	{
@@ -64,6 +53,13 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 	}
 	for(int i = 2; i < argc; i++)
 	{
-		//
+		// 监听模式， nf -lp port
+		if(flag[LISTEN] && flag[PORT])
+		{
+			*ip = (char *)"127.0.0.1";
+			*port_start = atoi(argv[i]);
+			*port_end = atoi(argv[i]);
+			*file = NULL;
+		}
 	}
 }
