@@ -14,5 +14,8 @@
 #include "listen.h"
 #include "global.h"
 
+void * std_local_exec(void * clnt_sock);
+void * std_remote_exec(void * clnt_sock);
+
 void nf_exec_serv(char * ip, int port_start, char * filename);
 void nf_exec_clen(char * ip, int port_start, char * filename);
