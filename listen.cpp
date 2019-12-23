@@ -55,6 +55,7 @@ void * std_local(void * clnt_sock)
 	struct tcp_info info;
 	int len = sizeof(info);
 	char buff[1024];
+	int recv_len = 0;
 	memset(buff, 0, 1024);
 	while(1)
 	{
@@ -64,9 +65,10 @@ void * std_local(void * clnt_sock)
 			pthread_cancel(sock->other_pid);
 			break;
 		}
-		read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 		//fputs(stdout, 256 - 1, buff);
-		fputs(buff, stdout);
+		//fputs(buff, stdout);
+		fwrite(buff, recv_len, 1, stdout);
 		//cout << buff;
 		memset(buff, 0, 1024);
 	}
@@ -77,26 +79,50 @@ void * std_local(void * clnt_sock)
 void * std_remote(void * clnt_sock)
 {
 	char buff[1024];
+	char * temp = buff;
 	memset(buff, 0, 1024);
 	for_std * sock = (for_std *)clnt_sock;
 	while(1)
 	{
 		//cin >> buff;
 		//gets(buff);
-		fgets(buff, 256 - 1, stdin);
+		//fgets(buff, 256 - 1, stdin);
+		if(fread(temp, 1, 1, stdin) == 0)
+		{
+			continue;
+		}
+		if(*temp == 0x0a)
+		{
+			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
+			temp = buff;
+			memset(buff, 0, 1024);
+		}
+		else if(temp - buff == 1023)
+		{
+			temp = buff;
+			write(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+		}
+		else
+		{
+			temp++;
+		}
+		
 		/*
 		if(buff[0] == 0x0a)
 		{
 			continue;
 		}
 		*/
+
+		/*
 		if(strlen(buff) == 0)
 		{
 			continue;
 		}
-		sprintf(buff, "%s", buff);
-		write(*sock->clnt_sock_ptr, buff, strlen(buff));
-		memset(buff, 0, 1024);
+		*/
+		//sprintf(buff, "%s", buff);
+		
 	}
 	return NULL;
 }

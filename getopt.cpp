@@ -104,7 +104,7 @@ goto_help:
 			{
 				goto goto_help;
 			}
-			cout << "Scanning " << *ip << " from " << *port_start << " to " << *port_end << endl;
+			//cout << "Scanning " << *ip << " from " << *port_start << " to " << *port_end << endl;
 		}  // if(flag[ZERO])  扫描模式的参数到此结束
 
 		else if(flag[LISTEN])  // 监听模式
@@ -118,7 +118,7 @@ goto_help:
 				*port_start = atoi(argv[2]);
 				*port_end = atoi(argv[2]);
 				*file = NULL;
-				cout << "Listen at: " << *ip << " on: " << *port_start << endl;
+				//cout << "Listen at: " << *ip << " on: " << *port_start << endl;
 			}
 			else
 			{
@@ -137,7 +137,7 @@ goto_help:
 		*port_start = atoi(argv[2]);
 		*port_end = atoi(argv[2]);
 		flag[CONNECT] = true;
-		cout << "Connect to " << *ip << " on " << *port_start << endl;
+		//cout << "Connect to " << *ip << " on " << *port_start << endl;
 		if(argc > 3)
 		{
 			for(int i = 3; i < argc; i++)
@@ -156,7 +156,7 @@ goto_help:
 				{
 					// 前一个参数为-e，则该参数为程序的路径
 					*file = argv[i];
-					cout << "Exec file: " << *file << endl;
+					//cout << "Exec file: " << *file << endl;
 				}
 			}
 		}
@@ -182,7 +182,7 @@ goto_help:
 		{
 			// 前一个参数为-e，则该参数为程序的路径
 			*file = argv[i];
-			cout << "Exec file: " << *file << endl;
+			//cout << "Exec file: " << *file << endl;
 		}
 
 		/*
