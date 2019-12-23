@@ -2,7 +2,7 @@
 //		l, p, e, h, z
 //
 // l:	listen			listen mode, for inbound connects
-// p:	port			local port number
+// p:	port			local or remote port number
 // e:	prog			inbound program to exec [dangerous!]
 // h:	help			this cruft
 // z:	zero-I/O		zero-I/O mode [used for scanning]
@@ -14,7 +14,4 @@
 #define PROG		2
 #define HELP		3
 #define ZERO        4
-/*
-#define INPUT       5
-#define OUTPUT      6
-*/
+#define CONNECT     5

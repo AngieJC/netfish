@@ -115,8 +115,8 @@ goto_help:
 				************服务器模式************
 				********************************/
 				*ip = (char *)"127.0.0.1";
-				*port_start = atoi(argv[2]);
-				*port_end = atoi(argv[2]);
+				*port_start = atoi(argv[3]);
+				*port_end = atoi(argv[3]);
 				*file = NULL;
 				cout << "Listen at: " << *ip << " on: " << *port_start << endl;
 			}
@@ -136,6 +136,7 @@ goto_help:
 		*ip = argv[1];
 		*port_start = atoi(argv[2]);
 		*port_end = atoi(argv[2]);
+		flag[CONNECT] = true;
 		cout << "Connect to " << *ip << " on " << *port_start << endl;
 	}
 

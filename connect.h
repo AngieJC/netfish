@@ -11,6 +11,9 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-int nf_listen(char * ip, int port_start);
-void * std_local(void * clnt_sock);
-void * std_remote(void * clnt_sock);
+#include "listen.h"
+#include "global.h"
+
+int nf_connect(char * ip, int port_start);
+//void * std_local(void * clnt_sock);
+//void * std_remote(void * clnt_sock);

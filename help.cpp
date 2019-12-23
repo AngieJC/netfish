@@ -12,7 +12,7 @@ void help()
     cout << "connect to womewhere:\tnf hostname port" << endl;
     cout << "listen for inbound:\tnf -lp port" << endl;
     cout << "l:\tlisten\t\t\tlisten mode, for inbound connects" << endl;
-    cout << "p:\tport\t\t\tlocal port number" << endl;
+    cout << "p:\tport\t\t\tlocal or remote port number" << endl;
     cout << "e:\tprog\t\t\tinbound program to exec [dangerous!]" << endl;
     cout << "h:\thelp\t\t\tthis cruft" << endl;
     cout << "z:\tzero-I/O\t\tzero-I/O mode [used for scanning]" << endl;
