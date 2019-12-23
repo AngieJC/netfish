@@ -15,7 +15,7 @@ int nf_listen(char * ip, int port_start)
 	struct sockaddr_in serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr));  //每个字节都用0填充
     serv_addr.sin_family = AF_INET;  //使用IPv4地址
-    serv_addr.sin_addr.s_addr = inet_addr(ip);  //具体的IP地址
+    serv_addr.sin_addr.s_addr = htons(INADDR_ANY);  //具体的IP地址
 	serv_addr.sin_port = htons(port_start);  //端口
     bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
@@ -79,9 +79,21 @@ void * std_remote(void * clnt_sock)
 	for_std * sock = (for_std *)clnt_sock;
 	while(1)
 	{
-		cin >> buff;
-		sprintf(buff, "%s\r\n", buff);
-		write(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		//cin >> buff;
+		//gets(buff);
+		fgets(buff, 256 - 1, stdin);
+		/*
+		if(buff[0] == 0x0a)
+		{
+			continue;
+		}
+		*/
+		if(strlen(buff) == 0)
+		{
+			continue;
+		}
+		sprintf(buff, "%s", buff);
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
 		memset(buff, 0, 1024);
 	}
 	return NULL;
