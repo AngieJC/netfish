@@ -17,6 +17,7 @@
 #include "help.h"			// 打印帮助信息
 #include "connect.h"		// 连接服务器
 #include "scan.h"			// 端口扫描
+#include "exec.h"			// 交互式运行程序
 
 // flag[0, 1, 2, 3, 4]
 //		l, p, e, h, z
@@ -45,7 +46,7 @@ goto_help:
 	}
 
 	// 监听模式
-	if(flag[LISTEN])
+	if(flag[LISTEN] && !flag[PROG])
 	{
 		if(flag[PORT])
 		{
@@ -59,7 +60,7 @@ goto_help:
 	}
 
 	// 客户端模式
-	if(flag[CONNECT])
+	if(flag[CONNECT] && !flag[PROG])
 	{
 		nf_connect(ip, port_start);
 	}
@@ -68,6 +69,23 @@ goto_help:
 	if(flag[ZERO])
 	{
 		nf_scan(ip, port_start, port_end);
+	}
+
+	// 交互运行程序
+	if(flag[PROG])
+	{
+		if(flag[LISTEN])
+		{
+			nf_exec_serv(ip, port_start, file_name);
+		}
+		else if(flag[CONNECT])
+		{
+			nf_exec_clen(ip, port_start, file_name);
+		}
+		else
+		{
+			goto goto_help;
+		}
 	}
 
 	return 0;

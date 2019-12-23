@@ -138,12 +138,34 @@ goto_help:
 		*port_end = atoi(argv[2]);
 		flag[CONNECT] = true;
 		cout << "Connect to " << *ip << " on " << *port_start << endl;
+		if(argc > 3)
+		{
+			for(int i = 3; i < argc; i++)
+			{
+				// cout << argv[i] << endl;
+				// 交互式运行程序
+				if(strcmp(argv[i], "-e") == 0)
+				{
+					if(argc < 5)  // 这种情况为没有给出要运行的程序
+					{
+						goto goto_help;
+					}
+					flag[PROG] = true;
+				}
+				if(strcmp(argv[i - 1], "-e") == 0)
+				{
+					// 前一个参数为-e，则该参数为程序的路径
+					*file = argv[i];
+					cout << "Exec file: " << *file << endl;
+				}
+			}
+		}
+		return;
 	}
 
 	/********************************
 	***********扫描其他参数************
 	********************************/
-	/*
 	for(int i = 3; i < argc; i++)
 	{
 		// cout << argv[i] << endl;
@@ -160,8 +182,10 @@ goto_help:
 		{
 			// 前一个参数为-e，则该参数为程序的路径
 			*file = argv[i];
+			cout << "Exec file: " << *file << endl;
 		}
 
+		/*
 		// 输出重定向
 		if(strcmp(argv[i], ">") == 0)
 		{
@@ -205,8 +229,8 @@ goto_help:
 		{
 			cout << "Redirect from " << *file << endl;
 		}
+		*/
 	}
-	*/
 }
 
 /*
