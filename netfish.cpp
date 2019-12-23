@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <pthread.h>
+#include <netdb.h>
+#include <errno.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -18,6 +20,7 @@
 #include "connect.h"		// 连接服务器
 #include "scan.h"			// 端口扫描
 #include "exec.h"			// 交互式运行程序
+#include "getip.h"
 
 // flag[0, 1, 2, 3, 4]
 //		l, p, e, h, z
@@ -32,10 +35,12 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-	char * ip = NULL, * file_name = NULL;
+	char * ipOrHostname = NULL, * file_name = NULL;
 	int port_start = 0, port_end = 0, mod = 0;
 	bool flag[6] = {false};
-	get_opt(argc, argv, &ip, &port_start, &port_end, flag, &file_name);
+	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name);
+	char ip[16] = {0};
+	hostname_to_ip(ipOrHostname, ip);
 
 	// 帮助模式
 	if(flag[HELP])
