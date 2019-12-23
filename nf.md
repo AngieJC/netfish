@@ -6,7 +6,7 @@
 
    nf -z [ip] [ports]
 
-2. Banner获取
+2. Banner获取/客户端聊天
 
    nf [ip] [port]
 
@@ -16,7 +16,7 @@
 
       服务器：nf -lp [port] > [filename]
 
-      客户端：nf [ip] [port] < filename
+      客户端：nf [ip] [port] < [filename]
 
    2. 反向：
 
