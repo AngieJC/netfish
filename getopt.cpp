@@ -19,6 +19,7 @@ using namespace std;
 
 void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_end, bool * flag, char ** file)
 {
+	cout << argc << endl;
 	if(argc == 1)
 	{
 		flag[HELP] = true;
@@ -61,6 +62,9 @@ goto_help:
 		// 如果有-z，则为扫描模式
 		if(flag[ZERO])
 		{
+			/********************************
+			*************扫描模式*************
+			********************************/
 			if(argc == 4)
 			{
 				int invide = 0;
@@ -96,12 +100,20 @@ goto_help:
 			{
 				goto goto_help;
 			}
+			if(*port_end < *port_start)  // 参数范围错误
+			{
+				goto goto_help;
+			}
+			cout << "Scanning " << *ip << " from " << *port_start << " to " << *port_end << endl;
 		}  // if(flag[ZERO])  扫描模式的参数到此结束
 
 		else if(flag[LISTEN])  // 监听模式
 		{
 			if(flag[PORT])  // 定义了端口
 			{
+				/********************************
+				************服务器模式************
+				********************************/
 				*ip = (char *)"127.0.0.1";
 				*port_start = atoi(argv[2]);
 				*port_end = atoi(argv[2]);
@@ -116,19 +128,9 @@ goto_help:
 	}  // if(*argv[1] == '-')
 	else
 	{
-		/*
-		for(int i = 1; i < argc; i++)
-		{
-			// 监听模式， nf -lp port
-			if(flag[LISTEN] && flag[PORT])
-			{
-				*ip = (char *)"127.0.0.1";
-				*port_start = atoi(argv[i]);
-				*port_end = atoi(argv[i]);
-				*file = NULL;
-			}
-		}
-		*/
+		/********************************
+		************客户端模式************
+		********************************/
 		
 		// 如果第一各参数不是-xxx形式，那么一定是nf [ip] [port] ... 形式
 		*ip = argv[1];
@@ -136,6 +138,74 @@ goto_help:
 		*port_end = atoi(argv[2]);
 		cout << "Connect to " << *ip << " on " << *port_start << endl;
 	}
+
+	/********************************
+	***********扫描其他参数************
+	********************************/
+	/*
+	for(int i = 3; i < argc; i++)
+	{
+		// cout << argv[i] << endl;
+		// 交互式运行程序
+		if(strcmp(argv[i], "-e") == 0)
+		{
+			if(argc < 5)  // 这种情况为没有给出要运行的程序
+			{
+				goto goto_help;
+			}
+			flag[PROG] = true;
+		}
+		if(strcmp(argv[i - 1], "-e") == 0)
+		{
+			// 前一个参数为-e，则该参数为程序的路径
+			*file = argv[i];
+		}
+
+		// 输出重定向
+		if(strcmp(argv[i], ">") == 0)
+		{
+			// cout << "here\n";
+			if(argc < 5)  // 这种情况为没有给出要输出重定向的文件
+			{
+				goto goto_help;
+			}
+			flag[OUTPUT] = true;
+		}
+		if(strcmp(argv[i - 1], ">") == 0)
+		{
+			// 前一个参数为>，则该参数为输出重定向的文件路径
+			*file = argv[i];
+		}
+
+		// 输入重定向
+		if(strcmp(argv[i], "<") == 0)
+		{
+			if(argc < 5)  // 这种情况为没有给出要输出重定向的文件
+			{
+				goto goto_help;
+			}
+			flag[OUTPUT] = true;
+		}
+		if(strcmp(argv[i - 1], "<") == 0)
+		{
+			// 前一个参数为>，则该参数为输入重定向的文件路径
+			*file = argv[i];
+		}
+
+		if(flag[PROG])
+		{
+			cout << "Exec file: " << *file << endl;
+		}
+		if(flag[OUTPUT])
+		{
+			cout << "Redirect to " << *file << endl;
+		}
+		if(flag[INPUT])
+		{
+			cout << "Redirect from " << *file << endl;
+		}
+	}
+	*/
 }
 
 /*

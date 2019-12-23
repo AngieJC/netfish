@@ -14,3 +14,7 @@
 #define PROG		2
 #define HELP		3
 #define ZERO        4
+/*
+#define INPUT       5
+#define OUTPUT      6
+*/
