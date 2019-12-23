@@ -15,7 +15,8 @@
 #include "global.h"			// 定义了全局变量
 #include "listen.h"			// 监听模式需要用到的函数
 #include "help.h"			// 打印帮助信息
-#include "connect.h"
+#include "connect.h"		// 连接服务器
+#include "scan.h"			// 端口扫描
 
 // flag[0, 1, 2, 3, 4]
 //		l, p, e, h, z
@@ -61,6 +62,12 @@ goto_help:
 	if(flag[CONNECT])
 	{
 		nf_connect(ip, port_start);
+	}
+
+	// 扫描
+	if(flag[ZERO])
+	{
+		nf_scan(ip, port_start, port_end);
 	}
 
 	return 0;
