@@ -39,9 +39,11 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 				case 'p':
 					flag[PORT] = true;
 					break;
+				/*  由于-e参数不会出现在第一个，所以这里注释掉
 				case 'e':
 					flag[PROG] = true;
 					break;
+				*/
 				case 'h':  // 如果有-h参数，则直接退出该函数，显示帮助信息
 					flag[HELP] = true;
 					return;
@@ -89,6 +91,22 @@ goto_help:
 					*port_start = atoi(argv[3]);
 					*port_end = atoi(argv[3]);
 				}
+			}  // if(argc == 4)  有4个参数
+			else  // 否则肯定是参数有错误，显示帮助信息
+			{
+				goto goto_help;
+			}
+		}  // if(flag[ZERO])  扫描模式的参数到此结束
+
+		else if(flag[LISTEN])  // 监听模式
+		{
+			if(flag[PORT])  // 定义了端口
+			{
+				*ip = (char *)"127.0.0.1";
+				*port_start = atoi(argv[2]);
+				*port_end = atoi(argv[2]);
+				*file = NULL;
+				cout << "Listen at: " << *ip << " on: " << *port_start << endl;
 			}
 			else
 			{
@@ -98,6 +116,7 @@ goto_help:
 	}  // if(*argv[1] == '-')
 	else
 	{
+		/*
 		for(int i = 1; i < argc; i++)
 		{
 			// 监听模式， nf -lp port
@@ -109,6 +128,13 @@ goto_help:
 				*file = NULL;
 			}
 		}
+		*/
+		
+		// 如果第一各参数不是-xxx形式，那么一定是nf [ip] [port] ... 形式
+		*ip = argv[1];
+		*port_start = atoi(argv[2]);
+		*port_end = atoi(argv[2]);
+		cout << "Connect to " << *ip << " on " << *port_start << endl;
 	}
 }
 
