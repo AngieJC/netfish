@@ -65,7 +65,9 @@ void * std_local(void * clnt_sock)
 			break;
 		}
 		read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-		cout << buff;
+		//fputs(stdout, 256 - 1, buff);
+		fputs(buff, stdout);
+		//cout << buff;
 		memset(buff, 0, 1024);
 	}
 	return NULL;
