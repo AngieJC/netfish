@@ -21,10 +21,11 @@ typedef struct for_std  // 结构体，用于保存线程信息，方便通知�
 {
 	int * mutex;
 	int * clnt_sock_ptr;  // 套接字
+	int this_port, serv_data_port;  // PASV模式下FTP服务器的数据TCP连接的端口
 	pthread_t pid, other_pid;  // 两个线程ID
 }for_std;
 
-void * ftp_std_local(void * clnt_sock)
+void * ftp_control_std_local(void * clnt_sock)
 {
 	for_std * sock = (for_std *)clnt_sock;
 	struct tcp_info info;
@@ -58,7 +59,7 @@ void * ftp_std_local(void * clnt_sock)
 }
 
 
-void * ftp_std_remote(void * clnt_sock)
+void * ftp_control_std_remote(void * clnt_sock)
 {
 	char buff[1024] = {0};
 	char * temp = buff;
@@ -146,10 +147,122 @@ void * ftp_std_remote(void * clnt_sock)
 	}
 
 login_success:
+    strcpy(buff, "pasv\xd\xa");
+    write(*sock->clnt_sock_ptr, buff, strlen(buff));
+    memset(buff, 0, 1024);
+	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+    int addr[6] = {0};
+    sscanf(buff,"%*[^(](%d,%d,%d,%d,%d,%d)",&addr[0],&addr[1],&addr[2],&addr[3],&addr[4],&addr[5]);
+    sock->serv_data_port = addr[4] * 256 + addr[5];
+	memset(buff, 0, 1024);
 	*sock->mutex = 0;  // 完成登录后释放互斥量
 
 
 	// 用户输入命令
+	while(1)
+	{
+		//cin >> buff;
+		//gets(buff);
+		//fgets(buff, 256 - 1, stdin);
+		if(fread(temp, 1, 1, stdin) == 0)
+		{
+			if(temp == buff)
+			{
+				// 没有东西
+				continue;
+			}
+			else
+			{
+				// 这种情况为读到文件尾了
+				write(*sock->clnt_sock_ptr, buff, temp - buff);
+				temp = buff;
+				memset(buff, 0, 1024);
+				continue;
+			}
+		}
+		/*
+		else if(fread(temp, 1, 1, stdin) == 0 && temp != buff)
+		{
+			// 这种情况为读到文件尾了
+			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
+			temp = buff;
+			memset(buff, 0, 1024);
+		}
+		*/
+		if(*temp == 0x0a)
+		{
+			// 读到回车
+			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
+			temp = buff;
+			memset(buff, 0, 1024);
+		}
+		else if(temp - buff == 1022)
+		{
+			// 缓冲区满了
+			temp = buff;
+			write(*sock->clnt_sock_ptr, buff, 1023);
+			memset(buff, 0, 1024);
+		}
+		else
+		{
+			temp++;
+		}
+		
+		/*
+		if(buff[0] == 0x0a)
+		{
+			continue;
+		}
+		*/
+
+		/*
+		if(strlen(buff) == 0)
+		{
+			continue;
+		}
+		*/
+		//sprintf(buff, "%s", buff);
+		
+	}
+	return NULL;
+}
+
+void * ftp_data_std_local(void * clnt_sock)
+{
+	for_std * sock = (for_std *)clnt_sock;
+	struct tcp_info info;
+	int len = sizeof(info);
+	char buff[1024];
+	int recv_len = 0;
+	memset(buff, 0, 1024);
+	while(1)
+	{
+		getsockopt(*sock->clnt_sock_ptr, IPPROTO_TCP, TCP_INFO, (void *)&info, (socklen_t *)&len);
+		if(!(info.tcpi_state==TCP_ESTABLISHED))  // 连接已经断开
+		{
+			pthread_cancel(sock->other_pid);
+			break;
+		}
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		//fputs(stdout, 256 - 1, buff);
+		//fputs(buff, stdout);
+		if(recv_len > 0)
+		{
+			fwrite(buff, recv_len, 1, stdout);
+			memset(buff, 0, 1024);
+		}
+		//cout << buff;
+	}
+	return NULL;
+}
+
+
+void * ftp_data_std_remote(void * clnt_sock)
+{
+	char buff[1024];
+	char * temp = buff;
+	memset(buff, 0, 1024);
+	for_std * sock = (for_std *)clnt_sock;
 	while(1)
 	{
 		//cin >> buff;
