@@ -39,8 +39,6 @@ int main(int argc, char ** argv)
 	int port_start = 0, port_end = 0, mod = 0;
 	bool flag[6] = {false};
 	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name);
-	char ip[16] = {0};
-	hostname_to_ip(ipOrHostname, ip);
 
 	// 帮助模式
 	if(flag[HELP])
@@ -49,6 +47,9 @@ goto_help:
 		help();
 		return 0;
 	}
+
+	char ip[16] = {0};
+	hostname_to_ip(ipOrHostname, ip);
 
 	// 监听模式
 	if(flag[LISTEN] && !flag[PROG])
