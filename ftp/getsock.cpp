@@ -1,13 +1,3 @@
-/*
- filename:		ftp.cpp
- author:		AngieJC
- date:			2019/12/24
- description:	实现ftp客户端功能
-*/
-
-#include "ftp.h"
-#include "ftp/getsock.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,11 +13,11 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
+#include "getsock.h"
+
 using namespace std;
 
-void ftp(char * ip)
+int getsock(char * ip, int port)
 {
-    //cout << "FTP功能暂未实现，敬请期待" << endl;
-    getsock(ip, 21);
-    return;
+	cout << "这个函数用来获取套接字链接\n";
 }
