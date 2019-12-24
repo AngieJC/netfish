@@ -104,47 +104,67 @@ void * ftp_std_remote(void * clnt_sock)
 	fwrite(buff, recv_len, 1, stdout);
 	memset(buff, 0, 1024);
 
-	// 输入用户名
+	// 默认用户名
 	//buff = "user angie\xd\xa";
 	strcpy(buff, "user anonymous\xd\xa");
 	write(*sock->clnt_sock_ptr, buff, strlen(buff));
 	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 	memset(buff, 0, 1024);
 
-	// 输入密码
+	// 默认密码
 	strcpy(buff, "pass \xd\xa");
 	write(*sock->clnt_sock_ptr, buff, strlen(buff));
 	memset(buff, 0, 1024);
 	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 	//fwrite(buff_in, recv_len, 1, stdout);
 
-	// 判断是否可以匿名登录
+	// 判断默认用户名密码是否登录成功
+	char code[4] = {0};
+	for(int i = 0; i < 3; i++)
+	{
+		code[i] = buff[i];
+	}
+	memset(buff, 0, 1024);
+	if(strcmp("230", code))
+	{
+		strcpy(buff, "login with default user and pass failed...\nuser: ");
+		fwrite(buff, strlen(buff), 1, stdout);
+		memset(buff, 0, 1024);
+	}
+	else
+	{
+		cout << "login success\n";
+		memset(buff, 0, 1024);
+		goto login_success;
+	}
+
+	// 判断是否登录成功
 	while(1)
 	{
-		char code[4] = {0};
+		memset(buff, 0, 1024);
+		char user[1024] = {0}, pass[1024] = {0};
+		cin >> user;
+		cout << "pass: ";
+		cin >> pass;
+		sprintf(buff, "user %s\xd\xa", user);
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		memset(buff, 0, 1024);
+		
+		sprintf(buff, "pass %s\xd\xa", pass);
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
+		memset(buff, 0, 1024);
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 		for(int i = 0; i < 3; i++)
 		{
 			code[i] = buff[i];
 		}
-		memset(buff, 0, 1024);
 		if(strcmp("230", code))  // 登录失败
 		{
-			strcpy(buff, "login with default user and pass failed...\nuser: ");
+			//strcpy(buff, "login with default user and pass failed...\nuser: ");
+			strcpy(buff, "login failed...\nuser: ");
 			fwrite(buff, strlen(buff), 1, stdout);
 			memset(buff, 0, 1024);
-			char user[1024] = {0}, pass[1024] = {0};
-			cin >> user;
-			cout << "pass: ";
-			cin >> pass;
-			sprintf(buff, "user %s\xd\xa", user);
-			write(*sock->clnt_sock_ptr, buff, strlen(buff));
-			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-			memset(buff, 0, 1024);
-			
-			sprintf(buff, "pass %s\xd\xa", pass);
-			write(*sock->clnt_sock_ptr, buff, strlen(buff));
-			memset(buff, 0, 1024);
-			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 		}
 		else  // 登录成功
 		{
@@ -155,6 +175,7 @@ void * ftp_std_remote(void * clnt_sock)
 		}
 	}
 
+login_success:
 	*sock->mutex = 0;  // 完成登录后释放互斥量
 
 
