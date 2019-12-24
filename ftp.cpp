@@ -7,8 +7,8 @@
 
 #include "ftp.h"
 #include "ftp/getsock.h"
+#include "ftp/ftpfunc.h"
 #include "global.h"
-//include "listen.h"
 
 #include <stdio.h>
 #include <string.h>
