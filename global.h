@@ -15,3 +15,4 @@
 #define HELP		3
 #define ZERO        4
 #define CONNECT     5
+#define TIME        6

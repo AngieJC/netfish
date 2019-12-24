@@ -17,7 +17,7 @@
 
 using namespace std;
 
-void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_end, bool * flag, char ** file)
+void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_end, bool * flag, char ** file, int * time)
 {
 	//cout << argc << endl;
 	if(argc == 1)
@@ -65,7 +65,7 @@ goto_help:
 			/********************************
 			*************扫描模式*************
 			********************************/
-			if(argc == 4)
+			if(argc >= 4)
 			{
 				int invide = 0;
 				*ip = argv[2];
@@ -182,6 +182,21 @@ goto_help:
 		{
 			// 前一个参数为-e，则该参数为程序的路径
 			*file = argv[i];
+			//cout << "Exec file: " << *file << endl;
+		}
+
+		if(strcmp(argv[i], "-w") == 0)
+		{
+			if(argc < 5)  // 这种情况为没有给出要运行的程序
+			{
+				goto goto_help;
+			}
+			flag[TIME] = true;
+		}
+		if(strcmp(argv[i - 1], "-w") == 0)
+		{
+			// 前一个参数为-w，则该参数超时时间
+			*time = atoi(argv[i]);
 			//cout << "Exec file: " << *file << endl;
 		}
 

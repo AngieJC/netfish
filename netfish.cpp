@@ -36,9 +36,9 @@ using namespace std;
 int main(int argc, char ** argv)
 {
 	char * ipOrHostname = NULL, * file_name = NULL;
-	int port_start = 0, port_end = 0, mod = 0;
-	bool flag[6] = {false};
-	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name);
+	int port_start = 0, port_end = 0, mod = 0, time = 0;
+	bool flag[7] = {false};
+	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name, &time);
 
 	// 帮助模式
 	if(flag[HELP])
@@ -74,7 +74,14 @@ goto_help:
 	// 扫描
 	if(flag[ZERO])
 	{
-		nf_scan(ip, port_start, port_end);
+		if(flag[TIME])
+		{
+			nf_scan(ip, port_start, port_end, time);
+		}
+		else
+		{
+			nf_scan(ip, port_start, port_end);
+		}
 	}
 
 	// 交互运行程序
