@@ -1,3 +1,10 @@
+/*
+ filename:		netfish.cpp
+ author:		AngieJC
+ date:			不记得了
+ description:	用于集成其他的所有模块，形成类似nc的小工具
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -20,7 +27,8 @@
 #include "connect.h"		// 连接服务器
 #include "scan.h"			// 端口扫描
 #include "exec.h"			// 交互式运行程序
-#include "getip.h"
+#include "getip.h"			// 将域名翻译为IP
+#include "traceroute.h"		// 路由追踪
 
 // flag[0, 1, 2, 3, 4]
 //		l, p, e, h, z
@@ -37,7 +45,7 @@ int main(int argc, char ** argv)
 {
 	char * ipOrHostname = NULL, * file_name = NULL;
 	int port_start = 0, port_end = 0, mod = 0, time = 0;
-	bool flag[7] = {false};
+	bool flag[8] = {false};
 	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name, &time);
 
 	// 帮助模式
@@ -50,6 +58,13 @@ goto_help:
 
 	char ip[16] = {0};
 	hostname_to_ip(ipOrHostname, ip);
+
+	//路由追踪
+	if(flag[TRACEROUTE])
+	{
+		traceroute(ip);
+		return 0;
+	}
 
 	// 监听模式
 	if(flag[LISTEN] && !flag[PROG])

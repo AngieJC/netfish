@@ -1,3 +1,10 @@
+/*
+ filename:		listen.cpp
+ author:		AngieJC
+ date:			不记得了，要么跟netfish.cpp是同一天，要么是2019/12/23
+ description:	用于服务器监听，等待客户端连接
+*/
+
 #include "listen.h"
 #include "global.h"
 

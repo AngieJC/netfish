@@ -1,3 +1,10 @@
+/*
+ filename:		getopt.cpp
+ author:		AngieJC
+ date:			不记得了，跟netfish.cpp是同一天
+ description:	用于获取用户输入的各种参数，并对相应的flag位进行置位
+*/
+
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -50,6 +57,9 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 					return;
 				case 'z':
 					flag[ZERO] = true;
+					break;
+				case 't':
+					flag[TRACEROUTE] = true;
 					break;
 				default:  // 如果有非法参数，则直接退出该函数，显示帮助信息
 goto_help:
@@ -119,6 +129,21 @@ goto_help:
 				*port_end = atoi(argv[2]);
 				*file = NULL;
 				//cout << "Listen at: " << *ip << " on: " << *port_start << endl;
+			}
+			else
+			{
+				goto goto_help;
+			}
+		}
+
+		else if(flag[TRACEROUTE])
+		{
+			/********************************
+			*************跟踪路由*************
+			********************************/
+			if(argc == 3)
+			{
+				*ip = argv[2];
 			}
 			else
 			{

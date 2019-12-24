@@ -1,3 +1,10 @@
+/*
+ filename:		scan.cpp
+ author:		AngieJC
+ date:			2019/12/23
+ description:	用于扫描端口
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

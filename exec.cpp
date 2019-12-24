@@ -1,3 +1,10 @@
+/*
+ filename:		exec.cpp
+ author:		AngieJC
+ date:			2019/12/23
+ description:	用于在交互运行其他程序的，例如反弹shell，正向shell
+*/
+
 #include "exec.h"
 #include "global.h"
 #include <stdio.h>

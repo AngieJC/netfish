@@ -1,3 +1,10 @@
+/*
+ filename:		getip.cpp
+ author:		AngieJC
+ date:			2019/12/24
+ description:	用于将用户输入的域名翻译为IP的
+*/
+
 #include "getip.h"
 
 #include <stdio.h>

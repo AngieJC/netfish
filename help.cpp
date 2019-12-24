@@ -1,3 +1,10 @@
+/*
+ filename:		help.cpp
+ author:		AngieJC
+ date:			2019/12/23
+ description:	用于输出帮助信息
+*/
+
 #include <iostream>
 
 using namespace std;
@@ -16,4 +23,6 @@ void help()
     cout << "e:\tprog\t\t\tinbound program to exec [dangerous!]" << endl;
     cout << "h:\thelp\t\t\tthis cruft" << endl;
     cout << "z:\tzero-I/O\t\tzero-I/O mode [used for scanning]" << endl;
+    cout << "w:\twait\t\t\twait for some time" << endl;
+    cout << "t:\ttraceroute\t\ttrace the route from this PC to server" << endl;
 }

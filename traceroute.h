@@ -1,0 +1,1 @@
+void traceroute(char * ip);

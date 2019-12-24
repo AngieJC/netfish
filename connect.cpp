@@ -1,3 +1,11 @@
+/*
+ filename:		connect.cpp
+ author:		AngieJC
+ date:			2019/12/23
+ description:	作为客户端，连接服务器用的
+*/
+
+
 //#include "listen.h"
 #include "connect.h"
 #include "global.h"
