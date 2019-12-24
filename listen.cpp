@@ -68,9 +68,12 @@ void * std_local(void * clnt_sock)
 		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
 		//fputs(stdout, 256 - 1, buff);
 		//fputs(buff, stdout);
-		fwrite(buff, recv_len, 1, stdout);
+		if(recv_len > 0)
+		{
+			fwrite(buff, recv_len, 1, stdout);
+			memset(buff, 0, 1024);
+		}
 		//cout << buff;
-		memset(buff, 0, 1024);
 	}
 	return NULL;
 }
@@ -89,18 +92,41 @@ void * std_remote(void * clnt_sock)
 		//fgets(buff, 256 - 1, stdin);
 		if(fread(temp, 1, 1, stdin) == 0)
 		{
-			continue;
+			if(temp == buff)
+			{
+				// 没有东西
+				continue;
+			}
+			else
+			{
+				// 这种情况为读到文件尾了
+				write(*sock->clnt_sock_ptr, buff, temp - buff);
+				temp = buff;
+				memset(buff, 0, 1024);
+				continue;
+			}
 		}
-		if(*temp == 0x0a)
+		/*
+		else if(fread(temp, 1, 1, stdin) == 0 && temp != buff)
 		{
+			// 这种情况为读到文件尾了
 			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
 			temp = buff;
 			memset(buff, 0, 1024);
 		}
-		else if(temp - buff == 1023)
+		*/
+		if(*temp == 0x0a)
 		{
+			// 读到回车
+			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
 			temp = buff;
-			write(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+		}
+		else if(temp - buff == 1022)
+		{
+			// 缓冲区满了
+			temp = buff;
+			write(*sock->clnt_sock_ptr, buff, 1023);
 			memset(buff, 0, 1024);
 		}
 		else
