@@ -61,6 +61,9 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 				case 't':
 					flag[TRACEROUTE] = true;
 					break;
+				case 'f':
+					flag[FTP] = true;
+					break;
 				default:  // 如果有非法参数，则直接退出该函数，显示帮助信息
 goto_help:
 					flag[HELP] = true;
@@ -136,10 +139,27 @@ goto_help:
 			}
 		}
 
+		// 路由追踪，由于目前路由器可以识别这种探测方式，没有实现
 		else if(flag[TRACEROUTE])
 		{
 			/********************************
 			*************跟踪路由*************
+			********************************/
+			if(argc == 3)
+			{
+				*ip = argv[2];
+			}
+			else
+			{
+				goto goto_help;
+			}
+		}
+
+		// ftp
+		else if(flag[FTP])
+		{
+			/********************************
+			***************FTP***************
 			********************************/
 			if(argc == 3)
 			{

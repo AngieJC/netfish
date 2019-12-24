@@ -24,5 +24,6 @@ void help()
     cout << "h:\thelp\t\t\tthis cruft" << endl;
     cout << "z:\tzero-I/O\t\tzero-I/O mode [used for scanning]" << endl;
     cout << "w:\twait\t\t\twait for some time" << endl;
-    cout << "t:\ttraceroute\t\ttrace the route from this PC to server" << endl;
+    //cout << "t:\ttraceroute\t\ttrace the route from this PC to server" << endl;
+    cout << "f:\tFTP\t\t\tdownload or upload files" << endl;
 }

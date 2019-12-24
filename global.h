@@ -1,5 +1,5 @@
-// flag[0, 1, 2, 3, 4, 5, 6, 7]
-//		l, p, e, h, z,  , w, t
+// flag[0, 1, 2, 3, 4, 5, 6, 7, 8]
+//		l, p, e, h, z,  , w, t, f
 //
 // l:	listen			listen mode, for inbound connects
 // p:	port			local or remote port number
@@ -25,3 +25,4 @@
 #define CONNECT     5
 #define TIME        6
 #define TRACEROUTE  7
+#define FTP         8

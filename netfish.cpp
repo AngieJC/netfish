@@ -29,6 +29,7 @@
 #include "exec.h"			// 交互式运行程序
 #include "getip.h"			// 将域名翻译为IP
 #include "traceroute.h"		// 路由追踪
+#include "ftp.h"
 
 // flag[0, 1, 2, 3, 4]
 //		l, p, e, h, z
@@ -45,7 +46,7 @@ int main(int argc, char ** argv)
 {
 	char * ipOrHostname = NULL, * file_name = NULL;
 	int port_start = 0, port_end = 0, mod = 0, time = 0;
-	bool flag[8] = {false};
+	bool flag[9] = {false};
 	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name, &time);
 
 	// 帮助模式
@@ -63,6 +64,13 @@ goto_help:
 	if(flag[TRACEROUTE])
 	{
 		traceroute(ip);
+		return 0;
+	}
+
+	// ftp
+	if(flag[FTP])
+	{
+		ftp(ip);
 		return 0;
 	}
 
