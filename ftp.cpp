@@ -31,6 +31,7 @@ typedef struct for_std  // 结构体，用于保存线程信息，方便通知�
     int * mutex;
 	int * clnt_sock_ptr;  // 套接字
     int this_port, serv_data_port;  // PASV模式下FTP服务器的数据TCP连接的端口
+    char * ip;
 	pthread_t pid, other_pid;  // 两个线程ID
 }for_std;
 
@@ -51,22 +52,29 @@ void ftp(char * ip)
     // 由于两个线程都对同一个套接字进行操作，因此local.clnt_sock_ptr与remote.clnt_sock_ptr一样
 	control_local.clnt_sock_ptr = &control;
     control_local.mutex = &control_mutex;
+    control_local.ip = ip;
 	control_remote.clnt_sock_ptr = &control;
     control_remote.mutex = &control_mutex;
+    control_remote.ip = ip;
 
     // 创建两个线程
-	pthread_create(&control_local.pid, NULL, ftp_control_std_local, (void *)&control_local);
+	//pthread_create(&control_local.pid, NULL, ftp_control_std_local, (void *)&control_local);
 	pthread_create(&control_remote.pid, NULL, ftp_control_std_remote, (void *)&control_remote);
 
     // 告诉当前线程另一个线程的ID是多少
-	control_remote.other_pid = control_local.pid;
-	control_local.other_pid = control_remote.pid;
+    
+	//control_remote.other_pid = control_local.pid;
+	//control_local.other_pid = control_remote.pid;
+    
 
+    /*
     while(control_mutex)
     {
         sleep(0.1);
     }
+    */
 
+/* 以下部分为建立data连接，由于交给control控制比较方便，所以现在放到ftpfunc.cpp里了
     data = getsock(ip, control_remote.serv_data_port, local_port + 1);  // 最后一个参数没有用上，按照FTP协议，最后一个参数是数据连接的客户端的端口
 
     for_std data_local, data_remote;
@@ -84,12 +92,14 @@ void ftp(char * ip)
     // 告诉当前线程另一个线程的ID是多少
 	data_remote.other_pid = data_local.pid;
 	data_local.other_pid = data_remote.pid;
-
+*/
     // 等待线程退出
-	pthread_join(control_local.pid,NULL);
+	//pthread_join(control_local.pid,NULL);
 	pthread_join(control_remote.pid,NULL);
+    /*
     pthread_join(data_local.pid,NULL);
     pthread_join(data_remote.pid,NULL);
+    */
 
     // 关闭套接字，释放系统资源
 	close(control);

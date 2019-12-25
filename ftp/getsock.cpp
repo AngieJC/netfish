@@ -62,13 +62,43 @@ int getsock(char * ip, int port, int * local_port)
 
 	// 获取sock本地端口
 	struct sockaddr_in localaddr;
-	socklen_t localaddr_len = sizeof(localaddr_len);
+	socklen_t localaddr_len = sizeof(localaddr);
 	int ret = getsockname(control_sock, (struct sockaddr *)&localaddr, &localaddr_len);
 	*local_port = ntohs(localaddr.sin_port);
     return control_sock;
 }
 
 int getsock(char * ip, int port, int local_port)
+{
+	// cout << "这个函数用来获取套接字链接\n";
+	int data_sock;
+    struct hostent *ht = NULL;
+	struct sockaddr_in servaddr;
+    data_sock = socket(AF_INET,SOCK_STREAM,0);
+    if(data_sock < 0)
+    {
+       // printf("socket error\n");
+       return -1;
+    }
+    ht = gethostbyname(ip);
+    if(!ht)
+    { 
+        return -1;
+    }
+   
+    memset(&servaddr,0,sizeof(struct sockaddr_in));
+    memcpy(&servaddr.sin_addr.s_addr,ht->h_addr,ht->h_length);
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(port);
+    
+    if(connect(data_sock,(struct sockaddr*)&servaddr,sizeof(struct sockaddr)) == -1)
+    {
+        return -1;
+    }
+    return data_sock;
+}
+
+int getsock(char * ip, int port)
 {
 	// cout << "这个函数用来获取套接字链接\n";
 	int data_sock;

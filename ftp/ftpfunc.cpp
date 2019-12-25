@@ -14,6 +14,7 @@
 #include <netinet/tcp.h>
 
 #include "ftpfunc.h"
+#include "getsock.h"
 
 using namespace std;
 
@@ -22,8 +23,17 @@ typedef struct for_std  // 结构体，用于保存线程信息，方便通知�
 	int * mutex;
 	int * clnt_sock_ptr;  // 套接字
 	int this_port, serv_data_port;  // PASV模式下FTP服务器的数据TCP连接的端口
+	char * ip;
 	pthread_t pid, other_pid;  // 两个线程ID
 }for_std;
+
+typedef struct getfile  // 用于上传下载文件
+{
+	int * clnt_sock_ptr;  // 套接字
+	char * filename;  // 文件名
+}getfile;
+
+int send_pasv(int sock);
 
 void * ftp_control_std_local(void * clnt_sock)
 {
@@ -37,6 +47,7 @@ void * ftp_control_std_local(void * clnt_sock)
 	{
 		if(*sock->mutex)
 		{
+			sleep(0.1);
 			continue;
 		}
 		getsockopt(*sock->clnt_sock_ptr, IPPROTO_TCP, TCP_INFO, (void *)&info, (socklen_t *)&len);
@@ -145,241 +156,166 @@ void * ftp_control_std_remote(void * clnt_sock)
 			memset(buff, 0, 1024);
 			break;
 		}
-		/*
-		memset(buff, 0, 1024);
-		char user[1024] = {0}, pass[1024] = {0};
-		cin >> user;
-		//fread(user, 1024, 1, stdin);
-		cout << "pass: ";
-		cin >> pass;
-		//fread(pass, 1024, 1, stdin);
-		sprintf(buff, "user %s\xd\xa", user);
-		write(*sock->clnt_sock_ptr, buff, strlen(buff));
-		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-		memset(buff, 0, 1024);
-		
-		sprintf(buff, "pass %s\xd\xa", pass);
-		write(*sock->clnt_sock_ptr, buff, strlen(buff));
-		memset(buff, 0, 1024);
-		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-		for(int i = 0; i < 3; i++)
-		{
-			code[i] = buff[i];
-		}
-		if(strcmp("230", code))  // 登录失败
-		{
-			//strcpy(buff, "login with default user and pass failed...\nuser: ");
-			strcpy(buff, "login failed...\nuser: ");
-			fwrite(buff, strlen(buff), 1, stdout);
-			memset(buff, 0, 1024);
-		}
-		else  // 登录成功
-		{
-			getchar();  // 获取cin后的回车，防止讲回车发送给服务器
-			cout << "login success\n";
-			memset(buff, 0, 1024);
-			break;
-		}
-		*/
 	}
 
 login_success:
-    strcpy(buff, "pasv\xd\xa");
-    write(*sock->clnt_sock_ptr, buff, strlen(buff));
-    memset(buff, 0, 1024);
-	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-    int addr[6] = {0};
-    sscanf(buff,"%*[^(](%d,%d,%d,%d,%d,%d)",&addr[0],&addr[1],&addr[2],&addr[3],&addr[4],&addr[5]);
-    sock->serv_data_port = addr[4] * 256 + addr[5];
-	memset(buff, 0, 1024);
-	*sock->mutex = 0;  // 完成登录后释放互斥量
+	//*sock->mutex = 0;  // 完成登录后释放互斥量
 
 
 	// 用户输入命令
+	int data_sock = 0;
+	int addr[6] = {0};
+	char cmd[1024] = {0};
 	while(1)
 	{
-		//cin >> buff;
-		//gets(buff);
-		//fgets(buff, 256 - 1, stdin);
-		if(fread(temp, 1, 1, stdin) == 0)
-		{
-			if(temp == buff)
-			{
-				// 没有东西
-				continue;
-			}
-			else
-			{
-				// 这种情况为读到文件尾了
-				write(*sock->clnt_sock_ptr, buff, temp - buff);
-				temp = buff;
-				memset(buff, 0, 1024);
-				continue;
-			}
-		}
 		/*
-		else if(fread(temp, 1, 1, stdin) == 0 && temp != buff)
-		{
-			// 这种情况为读到文件尾了
-			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
-			temp = buff;
-			memset(buff, 0, 1024);
-		}
+		strcpy(buff, "pasv\xd\xa");
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
+		memset(buff, 0, 1024);
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		memset(addr, 0, 6);
+		sscanf(buff,"%*[^(](%d,%d,%d,%d,%d,%d)",&addr[0],&addr[1],&addr[2],&addr[3],&addr[4],&addr[5]);
+		sock->serv_data_port = addr[4] * 256 + addr[5];
+		memset(buff, 0, 1024);
 		*/
-		if(*temp == 0x0a)
+
+		memset(cmd, 0, 1024);
+		cin >> cmd;
+		if(strcmp(cmd, "list") == 0 || strcmp(cmd, "l") == 0)
 		{
-			// 读到回车
-			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
-			temp = buff;
+			// 查看当前文件夹下所有文件
+			//getchar();
+			sock->serv_data_port = send_pasv(*sock->clnt_sock_ptr);  // 端口号可能为0
+			data_sock = getsock(sock->ip, sock->serv_data_port);
 			memset(buff, 0, 1024);
+			sprintf(buff, "list\xd\xa");
+			write(*sock->clnt_sock_ptr, buff, strlen(buff));
+			memset(buff, 0, 1024);
+			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+			pthread_t pid;
+			pthread_create(&pid, NULL, ftp_data_std_local, (void *)&data_sock);
 		}
-		else if(temp - buff == 1022)
+		else if(strcmp(cmd, "download") == 0 || strcmp(cmd, "d") == 0)
 		{
-			// 缓冲区满了
-			temp = buff;
-			write(*sock->clnt_sock_ptr, buff, 1023);
+			// 上传文件
+		}
+		else if(strcmp(cmd, "upload") == 0 || strcmp(cmd, "u") == 0)
+		{
+			// 下载文件
+		}
+		else if(strcmp(cmd, "quit") == 0 || strcmp(cmd, "q") == 0)
+		{
+			// 退出
+			getchar();
+			//sock->serv_data_port = send_pasv(*sock->clnt_sock_ptr);
+			//data_sock = getsock(sock->ip, sock->serv_data_port);
+			sprintf(buff, "quit\xd\xa");
+			write(*sock->clnt_sock_ptr, buff, strlen(buff));
 			memset(buff, 0, 1024);
+			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+			break;
+		}
+		else if(strcmp(cmd, "help") == 0 || strcmp(cmd, "h") == 0)
+		{
+print_help:
+			// 显示帮助
+			cout << "list or l:\t\tlist files on FTP Server" << endl;
+			cout << "download or d:\t\tdownload file from FTP Server" << endl;
+			cout << "upload or u:\t\tupload file to FTP Server" << endl;
+			cout << "quit or q:\t\tquit this program" << endl;
+			cout << "help or h:\t\tthis cruft" << endl;
+			continue;
 		}
 		else
 		{
-			temp++;
+			// 显示帮助
+			goto print_help;
 		}
-		
-		/*
-		if(buff[0] == 0x0a)
-		{
-			continue;
-		}
-		*/
-
-		/*
-		if(strlen(buff) == 0)
-		{
-			continue;
-		}
-		*/
-		//sprintf(buff, "%s", buff);
-		
 	}
 	return NULL;
 }
 
-void * ftp_data_std_local(void * clnt_sock)
+void * ftp_data_std_local(void * clnt_sock)  // 用于接收不需要保存的东西，比如list命令的返回结果
 {
-	for_std * sock = (for_std *)clnt_sock;
-	struct tcp_info info;
-	int len = sizeof(info);
 	char buff[1024];
 	int recv_len = 0;
+	int sock = *(int *)clnt_sock;
 	memset(buff, 0, 1024);
-	/*
-	while(1)
-	{
-		getsockopt(*sock->clnt_sock_ptr, IPPROTO_TCP, TCP_INFO, (void *)&info, (socklen_t *)&len);
-		if(!(info.tcpi_state==TCP_ESTABLISHED))  // 连接已经断开
-		{
-			pthread_cancel(sock->other_pid);
-			break;
-		}
-		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-		//fputs(stdout, 256 - 1, buff);
-		//fputs(buff, stdout);
-		if(recv_len > 0)
-		{
-			fwrite(buff, recv_len, 1, stdout);
-			memset(buff, 0, 1024);
-		}
-		//cout << buff;
-	}
-	*/
-	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
-	//close(*sock->clnt_sock_ptr);
-	//fputs(stdout, 256 - 1, buff);
-		//fputs(buff, stdout);
-	/*
-	if(recv_len > 0)
-	{
-		//fwrite(buff, recv_len, 1, stdout);
-		cout << buff;
-		memset(buff, 0, 1024);
-	}
-	*/
+	recv_len = read(sock, buff, sizeof(buff));
+	close(sock);
 	cout << buff;
 	memset(buff, 0, 1024);
 	return NULL;
 }
 
-
-void * ftp_data_std_remote(void * clnt_sock)
+void * ftp_file_std_local(void * clnt_sock)  // 用于下载文件并保存
 {
+	getfile * sock = (getfile *)clnt_sock;
 	char buff[1024];
-	char * temp = buff;
+	int recv_len = 0;
 	memset(buff, 0, 1024);
-	for_std * sock = (for_std *)clnt_sock;
+	FILE * downloca_file_fb;
+	downloca_file_fb = fopen(sock->filename, "wb");
 	while(1)
 	{
-		//cin >> buff;
-		//gets(buff);
-		//fgets(buff, 256 - 1, stdin);
-		if(fread(temp, 1, 1, stdin) == 0)
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		if(recv_len > 0)
 		{
-			if(temp == buff)
-			{
-				// 没有东西
-				continue;
-			}
-			else
-			{
-				// 这种情况为读到文件尾了
-				write(*sock->clnt_sock_ptr, buff, temp - buff);
-				temp = buff;
-				memset(buff, 0, 1024);
-				continue;
-			}
-		}
-		/*
-		else if(fread(temp, 1, 1, stdin) == 0 && temp != buff)
-		{
-			// 这种情况为读到文件尾了
-			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
-			temp = buff;
-			memset(buff, 0, 1024);
-		}
-		*/
-		if(*temp == 0x0a)
-		{
-			// 读到回车
-			write(*sock->clnt_sock_ptr, buff, temp - buff + 1);
-			temp = buff;
-			memset(buff, 0, 1024);
-		}
-		else if(temp - buff == 1022)
-		{
-			// 缓冲区满了
-			temp = buff;
-			write(*sock->clnt_sock_ptr, buff, 1023);
+			fwrite(buff, recv_len, 1, downloca_file_fb);
 			memset(buff, 0, 1024);
 		}
 		else
 		{
-			temp++;
+			fclose(downloca_file_fb);
+			break;
 		}
-		
-		/*
-		if(buff[0] == 0x0a)
-		{
-			continue;
-		}
-		*/
-
-		/*
-		if(strlen(buff) == 0)
-		{
-			continue;
-		}
-		*/
-		//sprintf(buff, "%s", buff);
-		
 	}
 	return NULL;
+}
+
+
+void * ftp_file_std_remote(void * clnt_sock)  // 用于下载文件并保存
+{
+	getfile * sock = (getfile *)clnt_sock;
+	char buff[1024];
+	int read_len = 0;
+	char * temp = buff;
+	memset(buff, 0, 1024);
+	FILE * upload_file_fb = fopen(sock->filename, "rb");
+	if(upload_file_fb == NULL)
+	{
+		cout << "open file error, maybe it does not exist..." << endl;
+		return NULL;
+	}
+	while(1)
+	{
+		read_len = fread(buff, 1024, 1, upload_file_fb);
+		if(read_len)
+		{
+			write(*sock->clnt_sock_ptr, buff, read_len);
+			memset(buff, 0, 1024);
+		}
+		else
+		{
+			fclose(upload_file_fb);
+			break;
+		}
+	}
+	return NULL;
+}
+
+int send_pasv(int sock)
+{
+	int recv_len;
+	int addr[6] = {0};
+	char buff[1024] = {0};
+	strcpy(buff, "pasv\xd\xa");
+	write(sock, buff, strlen(buff));
+	memset(buff, 0, 1024);
+	sleep(1);
+	recv_len = read(sock, buff, sizeof(buff));
+	sscanf(buff,"%*[^(](%d,%d,%d,%d,%d,%d)",&addr[0],&addr[1],&addr[2],&addr[3],&addr[4],&addr[5]);
+	return addr[4] * 256 + addr[5];
 }
