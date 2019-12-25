@@ -166,6 +166,7 @@ login_success:
 	int data_sock = 0;
 	int addr[6] = {0};
 	char cmd[1024] = {0};
+	char filename[1024] = {0};
 	while(1)
 	{
 		/*
@@ -180,6 +181,8 @@ login_success:
 		*/
 
 		memset(cmd, 0, 1024);
+		sleep(0.2);
+		cout << ">>>";
 		cin >> cmd;
 		if(strcmp(cmd, "list") == 0 || strcmp(cmd, "l") == 0)
 		{
@@ -198,11 +201,25 @@ login_success:
 		}
 		else if(strcmp(cmd, "download") == 0 || strcmp(cmd, "d") == 0)
 		{
-			// 上传文件
+			// 下载文件
+			cin >> filename;
+			sock->serv_data_port = send_pasv(*sock->clnt_sock_ptr);  // 端口号可能为0
+			data_sock = getsock(sock->ip, sock->serv_data_port);
+			getfile clnt_sock;
+			clnt_sock.clnt_sock_ptr = &data_sock;
+			clnt_sock.filename = filename;
+			memset(buff, 0, 1024);
+			sprintf(buff, "retr %s\xd\xa", filename);
+			write(*sock->clnt_sock_ptr, buff, strlen(buff));
+			memset(buff, 0, 1024);
+			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+			pthread_t pid;
+			pthread_create(&pid, NULL, ftp_file_std_local, (void *)&clnt_sock);
 		}
 		else if(strcmp(cmd, "upload") == 0 || strcmp(cmd, "u") == 0)
 		{
-			// 下载文件
+			// 上传文件
 		}
 		else if(strcmp(cmd, "quit") == 0 || strcmp(cmd, "q") == 0)
 		{
@@ -272,6 +289,7 @@ void * ftp_file_std_local(void * clnt_sock)  // 用于下载文件并保存
 			break;
 		}
 	}
+	cout << "download complete!\n";
 	return NULL;
 }
 
