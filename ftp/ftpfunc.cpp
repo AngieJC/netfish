@@ -167,6 +167,7 @@ login_success:
 	int addr[6] = {0};
 	char cmd[1024] = {0};
 	char filename[1024] = {0};
+	char path[1024] = {0};
 	while(1)
 	{
 		/*
@@ -183,7 +184,7 @@ login_success:
 		memset(cmd, 0, 1024);
 		sleep(0.2);
 		cin >> cmd;
-		if(strcmp(cmd, "list") == 0 || strcmp(cmd, "l") == 0)
+		if(strcmp(cmd, "ls") == 0 || strcmp(cmd, "l") == 0)
 		{
 			// 查看当前文件夹下所有文件
 			//getchar();
@@ -234,6 +235,31 @@ login_success:
 			pthread_t pid;
 			pthread_create(&pid, NULL, ftp_file_std_remote, (void *)&clnt_sock);
 		}
+		else if(strcmp(cmd, "cd") == 0)
+		{
+			// 改变工作目录
+			cin >> path;
+			sprintf(buff, "cwd %s\xd\xa", path);
+			write(*sock->clnt_sock_ptr, buff, strlen(buff));
+			memset(buff, 0, 1024);
+			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+		}
+		else if(strcmp(cmd, "rm") == 0)
+		{
+			// 删除文件
+			cin >> filename;
+			sprintf(buff, "dele %s\xd\xa", filename);
+			write(*sock->clnt_sock_ptr, buff, strlen(buff));
+			memset(buff, 0, 1024);
+			recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+			memset(buff, 0, 1024);
+		}
+		else if(strcmp(cmd, "clear") == 0)
+		{
+			// 清屏
+			system("clear");
+		}
 		else if(strcmp(cmd, "quit") == 0 || strcmp(cmd, "q") == 0)
 		{
 			// 退出
@@ -251,9 +277,12 @@ login_success:
 		{
 print_help:
 			// 显示帮助
-			cout << "list or l:\t\tlist files on FTP Server" << endl;
+			cout << "ls or l:\t\tlist files on FTP Server" << endl;
 			cout << "download or d:\t\tdownload file from FTP Server" << endl;
 			cout << "upload or u:\t\tupload file to FTP Server" << endl;
+			cout << "cd:\t\t\tchange directory" << endl;
+			cout << "rm:\t\t\tremove file" << endl;
+			cout << "clear:\t\t\tclean the screen" << endl;
 			cout << "quit or q:\t\tquit this program" << endl;
 			cout << "help or h:\t\tthis cruft" << endl;
 			continue;
