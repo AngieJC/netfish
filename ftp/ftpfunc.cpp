@@ -98,7 +98,7 @@ void * ftp_control_std_remote(void * clnt_sock)
 	memset(buff, 0, 1024);
 	if(strcmp("230", code))
 	{
-		strcpy(buff, "login with default user and pass failed...\nuser: ");
+		strcpy(buff, "login with default user and pass failed...\n");
 		fwrite(buff, strlen(buff), 1, stdout);
 		memset(buff, 0, 1024);
 	}
@@ -112,11 +112,12 @@ void * ftp_control_std_remote(void * clnt_sock)
 	// 判断是否登录成功
 	while(1)
 	{
-		memset(buff, 0, 1024);
 		char user[1024] = {0}, pass[1024] = {0};
+		cout << "user: ";
 		cin >> user;
 		cout << "pass: ";
 		cin >> pass;
+
 		sprintf(buff, "user %s\xd\xa", user);
 		write(*sock->clnt_sock_ptr, buff, strlen(buff));
 		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
@@ -144,6 +145,42 @@ void * ftp_control_std_remote(void * clnt_sock)
 			memset(buff, 0, 1024);
 			break;
 		}
+		/*
+		memset(buff, 0, 1024);
+		char user[1024] = {0}, pass[1024] = {0};
+		cin >> user;
+		//fread(user, 1024, 1, stdin);
+		cout << "pass: ";
+		cin >> pass;
+		//fread(pass, 1024, 1, stdin);
+		sprintf(buff, "user %s\xd\xa", user);
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		memset(buff, 0, 1024);
+		
+		sprintf(buff, "pass %s\xd\xa", pass);
+		write(*sock->clnt_sock_ptr, buff, strlen(buff));
+		memset(buff, 0, 1024);
+		recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+		for(int i = 0; i < 3; i++)
+		{
+			code[i] = buff[i];
+		}
+		if(strcmp("230", code))  // 登录失败
+		{
+			//strcpy(buff, "login with default user and pass failed...\nuser: ");
+			strcpy(buff, "login failed...\nuser: ");
+			fwrite(buff, strlen(buff), 1, stdout);
+			memset(buff, 0, 1024);
+		}
+		else  // 登录成功
+		{
+			getchar();  // 获取cin后的回车，防止讲回车发送给服务器
+			cout << "login success\n";
+			memset(buff, 0, 1024);
+			break;
+		}
+		*/
 	}
 
 login_success:
@@ -235,6 +272,7 @@ void * ftp_data_std_local(void * clnt_sock)
 	char buff[1024];
 	int recv_len = 0;
 	memset(buff, 0, 1024);
+	/*
 	while(1)
 	{
 		getsockopt(*sock->clnt_sock_ptr, IPPROTO_TCP, TCP_INFO, (void *)&info, (socklen_t *)&len);
@@ -253,6 +291,21 @@ void * ftp_data_std_local(void * clnt_sock)
 		}
 		//cout << buff;
 	}
+	*/
+	recv_len = read(*sock->clnt_sock_ptr, buff, sizeof(buff));
+	//close(*sock->clnt_sock_ptr);
+	//fputs(stdout, 256 - 1, buff);
+		//fputs(buff, stdout);
+	/*
+	if(recv_len > 0)
+	{
+		//fwrite(buff, recv_len, 1, stdout);
+		cout << buff;
+		memset(buff, 0, 1024);
+	}
+	*/
+	cout << buff;
+	memset(buff, 0, 1024);
 	return NULL;
 }
 

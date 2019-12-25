@@ -43,7 +43,7 @@ void ftp(char * ip)
     int data = 0;  // 数据连接的连接号
     int local_port = 0;
     control = getsock(ip, 21, &local_port);
-    int control_mutex = 1;
+    int control_mutex = 1, data_mutex = 1;
 
 
     for_std control_local, control_remote;
@@ -72,10 +72,10 @@ void ftp(char * ip)
     for_std data_local, data_remote;
 
     // 由于两个线程都对同一个套接字进行操作，因此local.clnt_sock_ptr与remote.clnt_sock_ptr一样
-	data_local.clnt_sock_ptr = &control;
-    data_local.mutex = &control_mutex;
-	data_remote.clnt_sock_ptr = &control;
-    data_remote.mutex = &control_mutex;
+	data_local.clnt_sock_ptr = &data;
+    data_local.mutex = &data_mutex;
+	data_remote.clnt_sock_ptr = &data;
+    data_remote.mutex = &data_mutex;
 
     // 创建两个线程
 	pthread_create(&data_local.pid, NULL, ftp_data_std_local, (void *)&data_local);
