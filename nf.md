@@ -2,7 +2,7 @@
 
 [NetCat详解](https://blog.csdn.net/fageweiketang/article/details/82833193)
 
-1. 端口扫描
+1. 端口扫描(**超时功能**)
 
    nf -z [ip] [ports]
 
@@ -49,3 +49,21 @@
    服务器：nf -lp [port] | dd of=[filename]
 
    客户端：dd if=[filename] | nf [ip] [port]
+
+7. ftp客户端 [测试用ftp站点：ftp.sjtu.edu.cn](ftp://ftp.sjtu.edu.cn)
+
+   1. 登录
+
+      1. 匿名登录
+
+      2. 匿名登录失败使用用户名密码登录
+
+   2. 查看当前路径下所有文件
+
+   3. 改变工作路径
+
+   4. 下载文件
+
+   5. 上传文件
+
+   6. 删除文件
