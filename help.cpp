@@ -23,6 +23,7 @@ void help()
     cout << "e:\tprog\t\t\tinbound program to exec [dangerous!]" << endl;
     cout << "h:\thelp\t\t\tthis cruft" << endl;
     cout << "z:\tzero-I/O\t\tzero-I/O mode [used for scanning]" << endl;
+    cout << "a:\tarp-find\t\tfind live host in LAN" << endl;
     cout << "w:\twait\t\t\twait for some time" << endl;
     //cout << "t:\ttraceroute\t\ttrace the route from this PC to server" << endl;
     cout << "f:\tFTP\t\t\tdownload or upload files" << endl;

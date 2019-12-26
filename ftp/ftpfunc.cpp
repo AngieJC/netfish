@@ -1,3 +1,10 @@
+/*
+ filename:		ftpfunc.cpp
+ author:		AngieJC
+ date:			2019/12/24
+ description:	ftp通信过程中需要用到的函数
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

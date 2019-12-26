@@ -29,31 +29,42 @@
 #include "exec.h"			// 交互式运行程序
 #include "getip.h"			// 将域名翻译为IP
 #include "traceroute.h"		// 路由追踪
-#include "ftp.h"
+#include "ftp.h"			// FTP客户端
+#include "arpfind.h"		// 主机发现
 
-// flag[0, 1, 2, 3, 4]
-//		l, p, e, h, z
+// flag[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+//		l, p, e, h, z,  , w, t, f, a
 //
 // l:	listen			listen mode, for inbound connects
-// p:	port			local port number
+// p:	port			local or remote port number
 // e:	prog			inbound program to exec [dangerous!]
 // h:	help			this cruft
 // z:	zero-I/O		zero-I/O mode [used for scanning]
+// w:   wait            break after waiting some time
+// f:   ftp             connect a FTP Server
+// a:   arp             find live hosts in LAN by ARP packet
 
 using namespace std;
 
 int main(int argc, char ** argv)
 {
-	char * ipOrHostname = NULL, * file_name = NULL;
+	char * ipOrHostname = NULL, * file_name = NULL, * interface = NULL;
 	int port_start = 0, port_end = 0, mod = 0, time = 0;
-	bool flag[9] = {false};
-	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name, &time);
+	bool flag[10] = {false};
+	get_opt(argc, argv, &ipOrHostname, &port_start, &port_end, flag, &file_name, &time, &interface);
 
 	// 帮助模式
 	if(flag[HELP])
 	{
 goto_help:
 		help();
+		return 0;
+	}
+
+	// 主机发现
+	if(flag[ARP])
+	{
+		find_host(interface);
 		return 0;
 	}
 

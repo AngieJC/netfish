@@ -24,7 +24,7 @@
 
 using namespace std;
 
-void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_end, bool * flag, char ** file, int * time)
+void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_end, bool * flag, char ** file, int * time, char ** interface)
 {
 	//cout << argc << endl;
 	if(argc == 1)
@@ -63,6 +63,9 @@ void get_opt(int argc, char ** argv, char ** ip, int * port_start, int * port_en
 					break;
 				case 'f':
 					flag[FTP] = true;
+					break;
+				case 'a':
+					flag[ARP] = true;
 					break;
 				default:  // 如果有非法参数，则直接退出该函数，显示帮助信息
 goto_help:
@@ -164,6 +167,22 @@ goto_help:
 			if(argc == 3)
 			{
 				*ip = argv[2];
+			}
+			else
+			{
+				goto goto_help;
+			}
+		}
+
+		// arp
+		else if(flag[ARP])
+		{
+			/********************************
+			***************FTP***************
+			********************************/
+			if(argc == 3)
+			{
+				*interface = argv[2];
 			}
 			else
 			{
