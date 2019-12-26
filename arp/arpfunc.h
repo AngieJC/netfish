@@ -40,7 +40,7 @@ typedef struct arparg
     uint32_t mask;
 }arparg;
 
-void init();
+void arpinit();
 
 // 通过网卡获取ip
 int get_local_ip(const char *eth_inf, char *ip);

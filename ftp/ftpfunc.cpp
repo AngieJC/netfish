@@ -311,7 +311,7 @@ void * ftp_data_std_local(void * clnt_sock)  // 用于接收不需要保存的�
 	memset(buff, 0, 1024);
 	recv_len = read(sock, buff, sizeof(buff));
 	close(sock);
-	cout << buff;
+	cout << buff << endl;
 	memset(buff, 0, 1024);
 	return NULL;
 }

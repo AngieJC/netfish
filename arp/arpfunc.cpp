@@ -31,7 +31,7 @@
 using namespace std;
 
 
-void init()
+void arpinit()
 {
     cout << "\033[31mThis func used to find hosts in LAN...\033[0m" << endl;
     cout << endl << endl << endl;

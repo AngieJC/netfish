@@ -37,8 +37,19 @@ typedef struct for_std  // 结构体，用于保存线程信息，方便通知�
 
 using namespace std;
 
+void ftpinit()
+{
+    cout << "\033[31mConnect FTP Server...\033[0m" << endl;
+    cout << endl << endl << endl;
+    cout << "\033[36m<:)))><" << "\t\t" << "<。)#)))≤" << endl;
+    cout << "\t" << "<()>+++<" << "\t" << "<・ )))><<\033[0m" << endl;
+    cout << endl << endl << endl;
+}
+
 void ftp(char * ip)
 {
+    ftpinit();
+
     //cout << "FTP功能暂未实现，敬请期待" << endl;
     int control = 0;  // 控连接的TCP连接号
     int data = 0;  // 数据连接的连接号

@@ -36,7 +36,7 @@ void find_host(char * interface)
 {
     char error[PCAP_ERRBUF_SIZE + 1] = { 0 };
 
-    init();
+    arpinit();
 
     // 申请ARP数据报
     _ARP_PACKET arpsend, arprecv;
