@@ -3,6 +3,7 @@
  author:		AngieJC
  date:			2019/12/26
  description:	主机发现中需要用到的函数
+ refer:         https://www.cnblogs.com/wd1001/p/4596945.html
  */
 
 #include <pcap.h>
@@ -29,50 +30,14 @@
 
 using namespace std;
 
-/*
-typedef u_int32_t in_addr_t;
-struct in_addr
-{
-    in_addr_t s_addr;
-};
-*/
 
 void init()
 {
-    cout << "This func used to find live hosts in LAN" << endl;
-    /*
-    int sock_mac;
-	struct ifreq ifr_mac;
-	char mac_addr[30];
-	sock_mac = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock_mac == -1)
-	{
-		perror("create socket falise...mac\n");
-		return;
-	}
- 
-	memset(&ifr_mac, 0, sizeof(ifr_mac));
-	strncpy(ifr_mac.ifr_name, "ens33", sizeof(ifr_mac.ifr_name) - 1);
- 
-	if ((ioctl(sock_mac, SIOCGIFHWADDR, &ifr_mac)) < 0)
-	{
-		printf("mac ioctl error\n");
-		close(sock_mac);
-		return;
-	}
- 
-	sprintf(mac_addr, "%02X:%02X:%02X:%02X:%02X:%02X",
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[0],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[1],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[2],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[3],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[4],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[5]
-	);
- 
-	close(sock_mac);
-    //cout << mac_addr << endl;
-    */
+    cout << "\033[31mThis func used to find hosts in LAN...\033[0m" << endl;
+    cout << endl << endl << endl;
+    cout << "\033[36m<:)))><" << "\t\t" << "<。)#)))≤" << endl;
+    cout << "\t" << "<()>+++<" << "\t" << "<・ )))><<\033[0m" << endl;
+    cout << endl << endl << endl;
 }
 
 int get_local_ip(const char *eth_inf, char *ip)
@@ -114,7 +79,7 @@ int getmac(_ARP_PACKET * arp_packet)
 	sock_mac = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock_mac == -1)
 	{
-		perror("create socket falise...mac\n");
+		perror("create socket false...mac\n");
 		return 0;
 	}
  
@@ -127,18 +92,6 @@ int getmac(_ARP_PACKET * arp_packet)
 		close(sock_mac);
 		return 0;
 	}
- 
-    /*
-	sprintf(mac_addr, "%02X:%02X:%02X:%02X:%02X:%02X",
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[0],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[1],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[2],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[3],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[4],
-		(unsigned char)ifr_mac.ifr_hwaddr.sa_data[5]
-	);
-    cout << mac_addr << endl;
-    */
 
     for(int i = 0; i < 6; i++)
     {
@@ -152,8 +105,6 @@ int getmac(_ARP_PACKET * arp_packet)
 void * sendarp(void * arp_packet)
 {
     arparg * args = (arparg *)arp_packet;
-    char error[PCAP_ERRBUF_SIZE + 1] = { 0 };
-    pcap_t * pcap = pcap_open_live(args->interface, 65536, 1, 1, error);
     for(int i = 0; i < 256; i++)
     {
         args->arppacket->ah.dest_ip_addr = args->localipsegment + i * 256 * 256 * 256;
@@ -161,8 +112,54 @@ void * sendarp(void * arp_packet)
         {
             continue;
         }
-        pcap_sendpacket(pcap, (u_char *)args->arppacket, sizeof(_ARP_PACKET));
+        pcap_sendpacket(args->pcap, (u_char *)args->arppacket, sizeof(_ARP_PACKET));
         sleep(0.001);
     }
-    pcap_close(pcap);
+
+    return NULL;
+}
+
+void * recvarp(void * arp_packet)
+{
+    arparg * args = (arparg *)arp_packet;
+    char packet_filter[]="ether proto \\arp";
+    struct bpf_program fcode;
+    struct pcap_pkthdr * header;
+    const u_char * pkt_data;
+
+    pcap_compile(args->pcap, &fcode, packet_filter, 1, args->mask);
+    pcap_setfilter(args->pcap, &fcode);
+    int result;
+    struct in_addr ip_address;
+    uint32_t liveip[256] = {0};
+    while((result=pcap_next_ex(args->pcap,&header,&pkt_data))>=0)
+    {
+        if(result == 0)
+        {
+            continue;
+        }
+
+        _ARP_HEAD * arph = (_ARP_HEAD *)(pkt_data +14);
+        if(!checkip(arph->source_ip_addr, liveip))
+        {
+            ip_address.s_addr = arph->source_ip_addr;
+            cout << inet_ntoa(ip_address) << "\tis alive..." << endl;
+        }
+    }
+
+    return NULL;
+}
+
+bool checkip(uint32_t source_ip_addr, uint32_t * liveip)
+{
+    while(*liveip)
+    {
+        if(*liveip == source_ip_addr)
+        {
+            return true;
+        }
+        liveip++;
+    }
+    *liveip = source_ip_addr;
+    return false;
 }

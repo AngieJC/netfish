@@ -36,6 +36,8 @@ typedef struct arparg
     char * interface;
     _ARP_PACKET * arppacket;
     uint32_t localipsegment;
+    pcap_t * pcap;
+    uint32_t mask;
 }arparg;
 
 void init();
@@ -51,3 +53,9 @@ void make_request(_ARP_PACKET * arp_packet, unsigned char* source_mac_addr, unsi
 
 // 发送ARP数据报
 void * sendarp(void * arp_packet);
+
+// 接收ARP数据报并判断IP是否存活
+void * recvarp(void * arp_packet);
+
+// 判断接收的ARP包的来源IP之前是否发过，防止重复打印
+bool checkip(uint32_t source_ip_addr, uint32_t * liveip);
