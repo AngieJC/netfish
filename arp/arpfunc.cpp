@@ -75,6 +75,37 @@ void init()
     */
 }
 
+int get_local_ip(const char *eth_inf, char *ip)
+{
+	int sd;
+	struct sockaddr_in sin;
+	struct ifreq ifr;
+ 
+	sd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (-1 == sd)
+	{
+		printf("socket error: %s\n", strerror(errno));
+		return -1;
+	}
+ 
+	strncpy(ifr.ifr_name, eth_inf, IFNAMSIZ);
+	ifr.ifr_name[IFNAMSIZ - 1] = 0;
+ 
+	// if error: No such device  
+	if (ioctl(sd, SIOCGIFADDR, &ifr) < 0)
+	{
+		printf("ioctl error: %s\n", strerror(errno));
+		close(sd);
+		return -1;
+	}
+ 
+	memcpy(&sin, &ifr.ifr_addr, sizeof(sin));
+	snprintf(ip, 16, "%s", inet_ntoa(sin.sin_addr));
+ 
+	close(sd);
+	return 0;
+}
+
 int getmac(_ARP_PACKET * arp_packet)
 {
     int sock_mac;
@@ -118,7 +149,20 @@ int getmac(_ARP_PACKET * arp_packet)
     return 1;
 }
 
-void make_request(_ARP_PACKET * arp_packet, unsigned char* source_mac_addr, unsigned long source_ip_addr, unsigned long dest_ip_addr)
+void * sendarp(void * arp_packet)
 {
-    //
+    arparg * args = (arparg *)arp_packet;
+    char error[PCAP_ERRBUF_SIZE + 1] = { 0 };
+    pcap_t * pcap = pcap_open_live(args->interface, 65536, 1, 1, error);
+    for(int i = 0; i < 256; i++)
+    {
+        args->arppacket->ah.dest_ip_addr = args->localipsegment + i * 256 * 256 * 256;
+        if(args->arppacket->ah.dest_ip_addr == args->arppacket->ah.source_ip_addr)  // 跳过自己
+        {
+            continue;
+        }
+        pcap_sendpacket(pcap, (u_char *)args->arppacket, sizeof(_ARP_PACKET));
+        sleep(0.001);
+    }
+    pcap_close(pcap);
 }

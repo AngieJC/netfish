@@ -32,38 +32,6 @@
 
 using namespace std;
 
-/*
-// arp头
-struct _ARP_HEAD
-{
-	u_short     hardware_type;          // 硬件类型  0x0001
-	u_short     protocal_type;          // 协议类型  0x0800
-	u_char      hardware_addr_len;      // 硬件地址长度  06
-	u_char      protocal_addr_len;      // 协议地址长度  04
-	u_short     operation_field;        // 操作字段 01 request ,  02 response
-	u_char      source_mac_addr[6];     // 源mac地址 will be filled in runtime
-	u_long      source_ip_addr;         // 源ip地址 localhost
-	u_char      dest_mac_addr[6];       // 目的max地址 00:00:00:00:00:00
-	u_long      dest_ip_addr;           // 目的ip地址 
-};
-
-// 以太头
-struct _ETHER_HEAD
-{
-	u_char      dest_mac_addr[6];       //目的 mac 地址
-	u_char      source_mac_addr[6];     //源 mac 地址
-	u_short     type;                   //帧类型
-};
-
-// arp数据报
-struct _ARP_PACKET
-{
-    _ETHER_HEAD     eh;                 // 以太头
-    _ARP_HEAD       ah;                 // ARP头
-    u_char          padding[18];        // 数据填充，保证数据长度大于60
-};
-*/
-
 void find_host(char * interface)
 {
     init();
@@ -97,11 +65,15 @@ void find_host(char * interface)
     arpsend.ah.protocal_addr_len = 0x0004;
     arpsend.ah.operation_field = htons(0x00001);
     memcpy(arpsend.ah.source_mac_addr, arpsend.eh.source_mac_addr, 6);
-    //memset((char*)&arpsend.ah.source_ip_addr, 0, 4);  // 源ip
-    arpsend.ah.source_ip_addr = inet_addr("192.168.139.18");
+    char ip_string[16] = {0};
+    uint32_t localip, localipsegment;
+    get_local_ip(interface, ip_string);
+    localip = inet_addr(ip_string);
+    localipsegment = localip % (256 * 256 * 256);
+    arpsend.ah.source_ip_addr = localip;
+    //arpsend.ah.source_ip_addr = inet_addr("192.168.139.18");
     memset(arpsend.ah.dest_mac_addr, 0, 6);
-    //memset((char*)&arpsend.ah.dest_ip_addr, 0, 4);  // 目的ip
-    arpsend.ah.dest_ip_addr = inet_addr("192.168.18.2");
+    //arpsend.ah.dest_ip_addr = inet_addr("192.168.18.1");
 
 
 
@@ -110,13 +82,54 @@ void find_host(char * interface)
 
 
 
-    // 佛送ARP数据报
-    char error[PCAP_ERRBUF_SIZE + 1] = { 0 };
-    pcap_t * pcap = pcap_open_live(interface, 65536, 1, 0, error);
-    for(int i = 0; i < 5; i++)
-    {
-        sleep(1);
-        pcap_sendpacket(pcap, (u_char *)&arpsend, sizeof(_ARP_PACKET));
-    }
+    // 发送ARP数据报
+    pthread_t send_pid, recv_pid;
+    arparg send_arp_packet, recv_arp_packet;
+    send_arp_packet.interface = interface;
+    send_arp_packet.arppacket = &arpsend;
+    send_arp_packet.localipsegment = localipsegment;
 
+
+    pthread_create(&send_pid, NULL, sendarp, (void *)&send_arp_packet);
+
+    pthread_join(send_pid, NULL);
+    /*
+    char error[PCAP_ERRBUF_SIZE + 1] = { 0 };
+    pcap_t * pcap = pcap_open_live(interface, 65536, 1, 1, error);
+    for(int i = 0; i < 256; i++)
+    {
+        arpsend.ah.dest_ip_addr = localipsegment + i * 256 * 256 * 256;
+        if(arpsend.ah.dest_ip_addr == arpsend.ah.source_ip_addr)  // 跳过自己
+        {
+            continue;
+        }
+        pcap_sendpacket(pcap, (u_char *)&arpsend, sizeof(_ARP_PACKET));
+        sleep(0.001);
+    }
+    pcap_close(pcap);
+    */
+
+    /*
+    for_std local, remote;
+    
+    // 由于两个线程都对同一个套接字进行操作，因此local.clnt_sock_ptr与remote.clnt_sock_ptr一样
+	local.clnt_sock_ptr = &clnt_sock;
+	remote.clnt_sock_ptr = &clnt_sock;
+
+    // 创建两个线程
+	pthread_create(&local.pid, NULL, std_local, (void *)&local);
+	pthread_create(&remote.pid, NULL, std_remote, (void *)&remote);
+
+    // 告诉当前线程另一个线程的ID是多少
+	remote.other_pid = local.pid;
+	local.other_pid = remote.pid;
+
+    // 等待线程退出
+	pthread_join(local.pid,NULL);
+	pthread_join(remote.pid,NULL);
+
+    // 关闭套接字，释放系统资源
+	close(serv_sock);
+	close(clnt_sock);
+    */
 }

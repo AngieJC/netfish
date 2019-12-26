@@ -30,10 +30,24 @@ struct _ARP_PACKET
     uint8_t          padding[18];        // 数据填充，保证数据长度大于60
 };
 
+// 发送ARP数据报与接收ARP数据报函数的参数
+typedef struct arparg
+{
+    char * interface;
+    _ARP_PACKET * arppacket;
+    uint32_t localipsegment;
+}arparg;
+
 void init();
+
+// 通过网卡获取ip
+int get_local_ip(const char *eth_inf, char *ip);
 
 // 获取mac地址
 int getmac(_ARP_PACKET * arp_packet);
 
 // 为ARP数据报(请求)填充数据
 void make_request(_ARP_PACKET * arp_packet, unsigned char* source_mac_addr, unsigned long source_ip_addr, unsigned long dest_ip_addr);
+
+// 发送ARP数据报
+void * sendarp(void * arp_packet);
