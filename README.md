@@ -53,7 +53,7 @@ Netfish which is like netcat, it is my course design of software engineering.
 
    客户端：dd if=[filename] | nf [ip] [port]
 
-7. ftp客户端 [测试用ftp站点：ftp.sjtu.edu.cn](ftp://ftp.sjtu.edu.cn)
+7. **ftp客户端 [测试用ftp站点：ftp.sjtu.edu.cn](ftp://ftp.sjtu.edu.cn)**
 
    nf -f [ip]
 
@@ -73,6 +73,6 @@ Netfish which is like netcat, it is my course design of software engineering.
 
    6. 删除文件
 
-8. ARP主机发现
+8. **ARP主机发现**
 
    nf -a [interface]
