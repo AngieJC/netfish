@@ -75,4 +75,8 @@ Netfish which is like netcat, it is my course design of software engineering.
 
 8. **ARP主机发现**
 
-   nf -a [interface]
+   sudo nf -a [interface]
+
+9. **路由追踪**
+
+   sudo nf -t [ip]

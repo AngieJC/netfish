@@ -136,7 +136,7 @@ int ping(char * ip) {
 	
 		// Output
 		printf("%2d. ", ttl);
-		if(repliedPacketsCnt == 0) { printf("*\n"); continue; }
+		if(repliedPacketsCnt == 0) { printf("\033[33mNo reply\033[0m\n"); continue; }
 		printIpList(ipsThatReplied);
 		destroyIpList(ipsThatReplied);
 			
