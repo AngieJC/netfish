@@ -77,6 +77,6 @@ Netfish which is like netcat, it is my course design of software engineering.
 
    sudo nf -a [interface]
 
-9. **路由追踪**
+9. **路由追踪 参考：[Traceroute](https://github.com/w-ku/Traceroute)**
 
    sudo nf -t [ip]
