@@ -19,7 +19,7 @@ void help()
     cout << "\033[36m<:)))><" << "\t\t" << "<。)#)))≤" << endl;
     cout << "\t" << "<()>+++<" << "\t" << "<・ )))><<\033[0m" << endl;
     cout << endl << endl << endl;
-    cout << "connect to womewhere:\tnf hostname port" << endl;
+    cout << "connect to somewhere:\tnf hostname port" << endl;
     cout << "listen for inbound:\tnf -lp port" << endl;
     cout << "l:\tlisten\t\t\tlisten mode, for inbound connects" << endl;
     cout << "p:\tport\t\t\tlocal or remote port number" << endl;
