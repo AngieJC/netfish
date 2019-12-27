@@ -91,7 +91,7 @@ void find_host(char * interface)
     pcap_t * pcap = pcap_open_live(interface, 65536, 1, 1, error);
     if(!pcap)
     {
-        cout << "open network card error\n";
+        cout << "open network card error, maybe use \"sudo\" can solve this problem\n";
         return;
     }
 
