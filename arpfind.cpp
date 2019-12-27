@@ -89,6 +89,11 @@ void find_host(char * interface)
     pthread_t send_pid, recv_pid;
 
     pcap_t * pcap = pcap_open_live(interface, 65536, 1, 1, error);
+    if(!pcap)
+    {
+        cout << "open network card error\n";
+        return;
+    }
 
     arparg send_arp_packet, recv_arp_packet;
     send_arp_packet.interface = interface;
@@ -101,7 +106,6 @@ void find_host(char * interface)
     recv_arp_packet.localipsegment = localipsegment;
     recv_arp_packet.pcap = pcap;
     recv_arp_packet.mask = mask;
-
     pthread_create(&send_pid, NULL, sendarp, (void *)&send_arp_packet);
     pthread_create(&recv_pid, NULL, recvarp, (void *)&recv_arp_packet);
 
