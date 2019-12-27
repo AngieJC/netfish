@@ -86,7 +86,7 @@ goto_help:
 				int invide = 0;
 				*ip = argv[2];
 				// 获取起止端口
-				for(int i = 0; i < sizeof(argv[3]); i++)
+				for(int i = 0; i < strlen(argv[3]); i++)
 				{
 					if(argv[3][i] == '-')
 					{
