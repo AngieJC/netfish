@@ -26,7 +26,7 @@ using namespace std;
 
 void traceroute(char * ip)
 {
-    /*
+    
     //创建套接字
     //SOCKET sock = socket(PF_INET, SOCK_DGRAM, 0);
     int sock = socket(AF_INET, SOCK_DGRAM,0);
@@ -49,8 +49,8 @@ void traceroute(char * ip)
         sleep(1);
     }
     close(sock);
-    */
-    cout << "路由追踪功能已经不太好使，没有实现" << endl;
+    
+    //cout << "路由追踪功能已经不太好使，没有实现" << endl;
 
     return;
 }
