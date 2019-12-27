@@ -22,12 +22,13 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
+using namespace std;
+
 int hostname_to_ip(char * hostname , char* ip)
 {
     struct hostent *he;
     struct in_addr **addr_list;
     int i;
-         
     if ( (he = gethostbyname( hostname ) ) == NULL) 
     {
         // get the host info
