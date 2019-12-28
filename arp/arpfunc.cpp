@@ -45,17 +45,17 @@ int get_local_ip(const char *eth_inf, char *ip)
 	int sd;
 	struct sockaddr_in sin;
 	struct ifreq ifr;
- 
+
 	sd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (-1 == sd)
 	{
 		printf("socket error: %s\n", strerror(errno));
 		return -1;
 	}
- 
+
 	strncpy(ifr.ifr_name, eth_inf, IFNAMSIZ);
 	ifr.ifr_name[IFNAMSIZ - 1] = 0;
- 
+
 	// if error: No such device  
 	if (ioctl(sd, SIOCGIFADDR, &ifr) < 0)
 	{
@@ -63,10 +63,10 @@ int get_local_ip(const char *eth_inf, char *ip)
 		close(sd);
 		return -1;
 	}
- 
+
 	memcpy(&sin, &ifr.ifr_addr, sizeof(sin));
 	snprintf(ip, 16, "%s", inet_ntoa(sin.sin_addr));
- 
+
 	close(sd);
 	return 0;
 }
@@ -82,10 +82,10 @@ int getmac(_ARP_PACKET * arp_packet)
 		perror("create socket false...mac\n");
 		return 0;
 	}
- 
+
 	memset(&ifr_mac, 0, sizeof(ifr_mac));
 	strncpy(ifr_mac.ifr_name, "ens33", sizeof(ifr_mac.ifr_name) - 1);
- 
+
 	if ((ioctl(sock_mac, SIOCGIFHWADDR, &ifr_mac)) < 0)
 	{
 		printf("mac ioctl error\n");
@@ -97,7 +97,7 @@ int getmac(_ARP_PACKET * arp_packet)
     {
         arp_packet->eh.source_mac_addr[i] = (unsigned char)ifr_mac.ifr_hwaddr.sa_data[i];
     }
- 
+
 	close(sock_mac);
     return 1;
 }

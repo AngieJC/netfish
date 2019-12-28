@@ -15,5 +15,3 @@
 #include "global.h"
 
 int nf_connect(char * ip, int port_start);
-//void * std_local(void * clnt_sock);
-//void * std_remote(void * clnt_sock);

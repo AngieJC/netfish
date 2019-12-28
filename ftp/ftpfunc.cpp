@@ -82,7 +82,7 @@ void * ftp_control_std_remote(void * clnt_sock)
 	char buff[1024] = {0};
 	char * temp = buff;
 	for_std * sock = (for_std *)clnt_sock;
-	
+
 	/*
 	首先使用匿名用户测试能不能登录，如果不能登录等待用户输入
 	*/

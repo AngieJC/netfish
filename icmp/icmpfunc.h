@@ -1,6 +1,7 @@
 #include "../global.h"
 
-typedef struct IP_LIST {
+typedef struct IP_LIST
+{
     struct in_addr value;
     struct IP_LIST *next;
 } ip_list;

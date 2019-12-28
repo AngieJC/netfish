@@ -41,15 +41,15 @@ int getsock(char * ip, int port, int * local_port)
     control_sock = socket(AF_INET,SOCK_STREAM,0);
     if(control_sock < 0)
     {
-       // printf("socket error\n");
-       return -1;
+        // printf("socket error\n");
+        return -1;
     }
     ht = gethostbyname(ip);
     if(!ht)
     { 
         return -1;
     }
-   
+
     memset(&servaddr,0,sizeof(struct sockaddr_in));
     memcpy(&servaddr.sin_addr.s_addr,ht->h_addr,ht->h_length);
     servaddr.sin_family = AF_INET;
@@ -77,20 +77,20 @@ int getsock(char * ip, int port, int local_port)
     data_sock = socket(AF_INET,SOCK_STREAM,0);
     if(data_sock < 0)
     {
-       // printf("socket error\n");
-       return -1;
+        // printf("socket error\n");
+        return -1;
     }
     ht = gethostbyname(ip);
     if(!ht)
     { 
         return -1;
     }
-   
+
     memset(&servaddr,0,sizeof(struct sockaddr_in));
     memcpy(&servaddr.sin_addr.s_addr,ht->h_addr,ht->h_length);
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(port);
-    
+
     if(connect(data_sock,(struct sockaddr*)&servaddr,sizeof(struct sockaddr)) == -1)
     {
         return -1;
@@ -107,20 +107,20 @@ int getsock(char * ip, int port)
     data_sock = socket(AF_INET,SOCK_STREAM,0);
     if(data_sock < 0)
     {
-       // printf("socket error\n");
-       return -1;
+        // printf("socket error\n");
+        return -1;
     }
     ht = gethostbyname(ip);
     if(!ht)
     { 
         return -1;
     }
-   
+
     memset(&servaddr,0,sizeof(struct sockaddr_in));
     memcpy(&servaddr.sin_addr.s_addr,ht->h_addr,ht->h_length);
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(port);
-    
+
     if(connect(data_sock,(struct sockaddr*)&servaddr,sizeof(struct sockaddr)) == -1)
     {
         return -1;
