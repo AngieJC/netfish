@@ -186,6 +186,7 @@ void * nf_scanner(void * scanner)
         this_scanner->flag = 0;
     }
     pthread_cancel(this_scanner->other_pid);
+	return NULL;
 }
 
 void * nf_timmer(void * timmer)
@@ -194,4 +195,5 @@ void * nf_timmer(void * timmer)
     two_thread * this_timmer = (two_thread *)timmer;
     sleep(this_timmer->time);
     pthread_cancel(this_timmer->other_pid);
+	return NULL;
 }
