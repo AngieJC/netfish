@@ -1,7 +1,7 @@
 # NetFish
 NetFish which is like NetCat, it is my course design of software engineering.
 
-模拟在网络工具中具有“瑞士军刀”美誉的NetCat。主要实现的功能有：端口扫描、Banner获取、传输文本与文件、远程控制、流媒体服务、远程硬盘克隆
+模拟在网络工具中具有“瑞士军刀”美誉的NetCat。主要实现的功能有：端口扫描、Banner获取、传输文本与文件、远程控制、流媒体服务、远程硬盘克隆、FTP客户端、ARP主机发现、ICMP路由追踪
 
 [NetCat详解](https://blog.csdn.net/fageweiketang/article/details/82833193)
 
