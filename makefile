@@ -16,6 +16,9 @@ arpfind.o: arpfind.cpp arp/arpfunc.cpp
 traceroute.o: traceroute.cpp icmp/icmpfunc.cpp
 	$(cc) -c traceroute.cpp icmp/icmpfunc.cpp $(opt)
 
+icmpfunc.o: icmp/icmpfunc.cpp
+	$(cc) -c icmp/icmpfunc.cpp
+
 clean:
 	rm -rf *.o
 

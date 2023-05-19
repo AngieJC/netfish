@@ -12,9 +12,9 @@ using namespace std;
 void help()
 {
     cout << "Author:\t\tAngieJC" << endl;
-    cout << "Email:\t\thtk90uggk@163.com" << endl;
+    cout << "Email:\t\thtk90uggk@outlook.com" << endl;
     cout << "Description:\tCourse design of software engineering" << endl;
-    cout << "Github:\t\thttps://github.com/AngieBare/netfish" << endl;
+    cout << "Github:\t\thttps://github.com/AngieJC/netfish" << endl;
     cout << "\n\n";
     cout << "\033[36m<:)))><" << "\t\t" << "<。)#)))≤" << endl;
     cout << "\t" << "<()>+++<" << "\t" << "<・ )))><<\033[0m" << endl;
